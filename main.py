@@ -1,4 +1,6 @@
 from database_operations import *
+from admin_operations import *
+from tabulate import tabulate
 import datetime
 
 def main():
@@ -15,7 +17,7 @@ def main():
         #member signing in
         if personType == "MEMBER":
              user = signIn(connect, "MEMBER")
-             print(user)
+             #print(user)
         
              
 
@@ -34,7 +36,9 @@ def signIn(connection, type):
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
         if profile:
-            print("Profile found: ", profile)
+            headers = getHeaders(connection, "members")
+            print("Profile found: ")
+            printTable(profile, headers, True)
             return profile
         else:
             print("No profile found for the provided email")
@@ -104,7 +108,8 @@ def register(connection):
 def showAllMembers(connection):
         query = "SELECT * FROM members"
         members = executeQuery(connection, query)
-        print(members)
+        headers = getHeaders(connection, "members")
+        printTable(members, headers, False)
 
 
 def memberMenu():
@@ -112,6 +117,24 @@ def memberMenu():
      print("1. Update Personal information")
      print("2. ")
 
+#function to print tables in a nice way
+def printTable(sql_query_result, headers, one=False):
+    if not sql_query_result:
+        print("No data found")
+        return
+    
+    rows = []
+
+    if(one):
+        rows.append(sql_query_result)
+        
+    else:
+        for row in sql_query_result:
+            if not headers:
+                headers = tuple(range(1, len(row) + 1))
+            rows.append(row)
+
+    print(tabulate(rows, headers=headers, tablefmt="grid"))
 
 if __name__ == "__main__":
         main()
