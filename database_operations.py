@@ -37,6 +37,7 @@ def executeQuery(connection, query, data=None, fetchOne=False):
             else:
                 results = cursor.fetchall()
                 return results
+            
         else:
             connection.commit()
             print("Query executed successfully")

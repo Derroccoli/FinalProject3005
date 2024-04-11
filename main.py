@@ -8,15 +8,42 @@ def main():
         regOrLog = register_or_login()
         if regOrLog == "R":
                 register(connect)
+                personType = "MEMBER"
         else:
             personType = classify()
-
-            
+        
+        #member signing in
+        if personType == "MEMBER":
+             user = signIn(connect, "MEMBER")
+             print(user)
+        
              
+
+def signIn(connection, type):
+    print("Please enter your email to sign in.")
+    while True:
+        userEmail = input()
+
+        if not userEmail:
+             print("Please enter an email into the field")
+        
+        #code to fetch profile
+        if type == "MEMBER":
+            query = "SELECT * FROM members WHERE email = %s"
+
+        data = (userEmail,)
+        profile = executeQuery(connection, query, data, fetchOne=True)
+        if profile:
+            print("Profile found: ", profile)
+            return profile
+        else:
+            print("No profile found for the provided email")
+
+
 
 def register_or_login():
     while True:
-        print("Register or sign in? (type r or s): ")
+        print("Register as a member or sign in? (type r or s): ")
         uInput = input().upper()
         if (uInput == "R" or uInput == "S"):
                 return uInput
@@ -69,6 +96,7 @@ def register(connection):
     queryData = (firstName, lastName, email, phoneNumber, regDate)
     executeQuery(connection, query, queryData)
     showAllMembers(connection)
+    print("registration complete")
 
 
 
@@ -78,6 +106,11 @@ def showAllMembers(connection):
         members = executeQuery(connection, query)
         print(members)
 
+
+def memberMenu():
+     print("What would you like to do?")
+     print("1. Update Personal information")
+     print("2. ")
 
 
 if __name__ == "__main__":
