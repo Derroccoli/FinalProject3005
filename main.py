@@ -31,6 +31,13 @@ def main():
                         if profileChoice not in choices:
                             print("invalid option")
                             continue
+                        
+                        if profileChoice == "1":
+                             break
+                        elif profileChoice == "2":
+                             break
+                        else:
+                             break
 
                   elif menuChoice == "2":
                        break
