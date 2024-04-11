@@ -1,4 +1,5 @@
 from database_operations import *
+import datetime
 
 def main():
         connect = connect_database()
@@ -9,6 +10,8 @@ def main():
                 register(connect)
         else:
             personType = classify()
+
+            
              
 
 def register_or_login():
@@ -33,36 +36,40 @@ def classify():
                 
 def register(connection):
     while True:
-        firstName = input("Please enter your first name: ")
+        firstName = str(input("Please enter your first name: "))
         if firstName:
             break
         else:
             print("First name cannot be empty. Please try again.")
 
     while True:
-        lastName = input("Please enter your last name: ")
+        lastName = str(input("Please enter your last name: "))
         if lastName:
             break
         else:
             print("Last name cannot be empty. Please try again.")
 
     while True:
-        email = input("Please enter your email: ")
+        email = str(input("Please enter your email: "))
         if email:
             break
         else:
             print("Email cannot be empty. Please try again.")
 
     while True:
-        phoneNumber = input("Please enter your phone number: ")
+        phoneNumber = str(input("Please enter your phone number: "))
         if phoneNumber:
             break
         else:
             print("Phone number cannot be empty. Please try again.")
 
-    query = "INSERT INTO members (firstName, lastName, email, phoneNumber, regDate) VALUES (%s, %s, %s, %s, %s, %s)"
-    executeQuery(connection, query)
+    regDate = datetime.datetime.now()
+
+    query = "INSERT INTO members (firstName, lastName, email, phone_number, date_registered) VALUES (%s, %s, %s, %s, %s)"
+    queryData = (firstName, lastName, email, phoneNumber, regDate)
+    executeQuery(connection, query, queryData)
     showAllMembers(connection)
+
 
 
 
@@ -72,9 +79,6 @@ def showAllMembers(connection):
         print(members)
 
 
-
-
-                
 
 if __name__ == "__main__":
         main()

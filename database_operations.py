@@ -21,10 +21,15 @@ def connect_database():
 
 
 #function for query execution
-def executeQuery(connection, query, fetchOne=False):
+def executeQuery(connection, query, data=None, fetchOne=False):
     try:
         cursor = connection.cursor()
-        cursor.execute(query)
+
+        if data:
+            cursor.execute(query, data)
+        else:
+            cursor.execute(query)
+        
         if query.strip().split()[0].upper() == 'SELECT':
             if fetchOne:
                 result = cursor.fetchone()
