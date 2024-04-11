@@ -16,6 +16,28 @@ def main():
         if personType == "MEMBER":
              user = signIn(connect, "MEMBER")
              print(user)
+             while True:
+                  memberMenu()
+                  choices = ["1", "2", "3"]
+                  menuChoice = input("Please type in (1, 2, or 3): ")
+                  if menuChoice not in choices:
+                       print("invalid option")
+                       continue
+
+                  if menuChoice == "1":
+                    while True:
+                        profileMenu()
+                        profileChoice = input("Please type in (1, 2, or 3): ")
+                        if profileChoice not in choices:
+                            print("invalid option")
+                            continue
+
+                  elif menuChoice == "2":
+                       break
+                  else:
+                       break
+
+
         
              
 
@@ -109,8 +131,15 @@ def showAllMembers(connection):
 
 def memberMenu():
      print("What would you like to do?")
-     print("1. Update Personal information")
-     print("2. ")
+     print("1. Update Personal and exercise information")
+     print("2. Check exercise routines, fitness achievements and health statistics")
+     print("3. Book personal or group training sessions")
+
+def profileMenu():
+     print("What would you like to do?")
+     print("1. update profile (phone number, email, etc.)")
+     print("2. Check exercise routines, fitness achievements and health statistics")
+     print("3. Book personal or group training sessions")
 
 
 if __name__ == "__main__":
