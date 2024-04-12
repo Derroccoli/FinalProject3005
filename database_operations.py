@@ -49,3 +49,23 @@ def executeQuery(connection, query, data=None, fetchOne=False):
             cursor.close()
 
 
+
+def getHeaders(connection, tableName):
+    try:
+        # Create a cursor
+        cursor = connection.cursor()
+
+        # Execute query to get column names
+        cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}'")
+
+        # Fetch all column names
+        headers = [row[0] for row in cursor.fetchall()]
+
+        # Close the cursor
+        cursor.close()
+
+        return headers
+
+    except psycopg2.Error as e:
+        print("Error retrieving table headers:", e)
+        return None

@@ -1,4 +1,7 @@
 from database_operations import *
+from admin_operations import *
+from member_operations import *
+from tabulate import tabulate
 import datetime
 
 def main():
@@ -15,36 +18,7 @@ def main():
         #member signing in
         if personType == "MEMBER":
              user = signIn(connect, "MEMBER")
-             print(user)
-             while True:
-                  memberMenu()
-                  choices = ["1", "2", "3"]
-                  menuChoice = input("Please type in (1, 2, or 3): ")
-                  if menuChoice not in choices:
-                       print("invalid option")
-                       continue
-
-                  if menuChoice == "1":
-                    while True:
-                        profileMenu()
-                        profileChoice = input("Please type in (1, 2, or 3): ")
-                        if profileChoice not in choices:
-                            print("invalid option")
-                            continue
-                        
-                        if profileChoice == "1":
-                             break
-                        elif profileChoice == "2":
-                             break
-                        else:
-                             break
-
-                  elif menuChoice == "2":
-                       break
-                  else:
-                       break
-
-
+             memberWorkFlow(connect, user)
         
              
 
@@ -63,7 +37,9 @@ def signIn(connection, type):
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
         if profile:
-            print("Profile found: ", profile)
+            headers = getHeaders(connection, "members")
+            print("Profile found: ")
+            printTable(profile, headers, True)
             return profile
         else:
             print("No profile found for the provided email")
@@ -87,6 +63,7 @@ def classify():
             return "MEMBER"
         elif (uInput == "ADMIN"):
             return "ADMIN"
+        print("invalid, please input again")
 
      
                 
@@ -133,21 +110,29 @@ def register(connection):
 def showAllMembers(connection):
         query = "SELECT * FROM members"
         members = executeQuery(connection, query)
-        print(members)
+        headers = getHeaders(connection, "members")
+        printTable(members, headers, False)
 
 
-def memberMenu():
-     print("What would you like to do?")
-     print("1. Update Personal and exercise information")
-     print("2. Check exercise routines, fitness achievements and health statistics")
-     print("3. Book personal or group training sessions")
 
-def profileMenu():
-     print("What would you like to do?")
-     print("1. update profile (phone number, email, etc.)")
-     print("2. Check exercise routines, fitness achievements and health statistics")
-     print("3. Book personal or group training sessions")
+#function to print tables in a nice way
+def printTable(sql_query_result, headers, one=False):
+    if not sql_query_result:
+        print("No data found")
+        return
+    
+    rows = []
 
+    if(one):
+        rows.append(sql_query_result)
+        
+    else:
+        for row in sql_query_result:
+            if not headers:
+                headers = tuple(range(1, len(row) + 1))
+            rows.append(row)
+
+    print(tabulate(rows, headers=headers, tablefmt="grid"))
 
 if __name__ == "__main__":
         main()

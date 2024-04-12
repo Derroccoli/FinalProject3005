@@ -1,5 +1,3 @@
---Database setup planning:
-
 CREATE TABLE members (
 	member_id SERIAL PRIMARY KEY,
 	firstName TEXT NOT NULL,
