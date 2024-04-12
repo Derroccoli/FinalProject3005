@@ -1,4 +1,5 @@
 import psycopg2
+from tabulate import tabulate
 from datetime import date
 
 
@@ -69,3 +70,23 @@ def getHeaders(connection, tableName):
     except psycopg2.Error as e:
         print("Error retrieving table headers:", e)
         return None
+
+
+#function to print tables in a nice way
+def printTable(sql_query_result, headers, one=False):
+    if not sql_query_result:
+        print("No data found")
+        return
+    
+    rows = []
+
+    if(one):
+        rows.append(sql_query_result)
+        
+    else:
+        for row in sql_query_result:
+            if not headers:
+                headers = tuple(range(1, len(row) + 1))
+            rows.append(row)
+
+    print(tabulate(rows, headers=headers, tablefmt="grid"))

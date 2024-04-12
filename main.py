@@ -17,8 +17,13 @@ def main():
         
         #member signing in
         if personType == "MEMBER":
-             user = signIn(connect, "MEMBER")
-             memberWorkFlow(connect, user)
+            user = signIn(connect, "MEMBER")
+            memberWorkFlow(connect, user)
+        elif personType == "MEMBER":
+            user = signIn(connect, "TRAINER")
+        else:
+            user = signIn(connect, "ADMIN")
+
         
              
 
@@ -33,6 +38,10 @@ def signIn(connection, type):
         #code to fetch profile
         if type == "MEMBER":
             query = "SELECT * FROM members WHERE email = %s"
+        elif type == "TRAINER":
+            query = "SELECT * FROM trainers WHERE email = %s"
+        else:
+            query = "SELECT * FROM admin_staff WHERE email = %s"
 
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
@@ -40,9 +49,20 @@ def signIn(connection, type):
             headers = getHeaders(connection, "members")
             print("Profile found: ")
             printTable(profile, headers, True)
-            return profile
+            break
+
         else:
             print("No profile found for the provided email")
+
+    #Start their loops
+    if type == "MEMBER":
+        #put member menu function in here
+        print("do smth")
+    elif type == "TRAINER":
+        #put trainer menu function in here
+        print("do smth")
+    else:
+        adminFunctions(connection)
 
 
 
@@ -54,9 +74,8 @@ def register_or_login():
                 return uInput
 
 def classify():
-    print("Are you a trainer, administator, or member")
     while True:
-        uInput = input().upper()
+        uInput = input("Are you a trainer, admin, or member: ").upper()
         if (uInput == "TRAINER"):
             return "TRAINER"
         elif (uInput == "MEMBER"):
@@ -115,24 +134,7 @@ def showAllMembers(connection):
 
 
 
-#function to print tables in a nice way
-def printTable(sql_query_result, headers, one=False):
-    if not sql_query_result:
-        print("No data found")
-        return
-    
-    rows = []
 
-    if(one):
-        rows.append(sql_query_result)
-        
-    else:
-        for row in sql_query_result:
-            if not headers:
-                headers = tuple(range(1, len(row) + 1))
-            rows.append(row)
-
-    print(tabulate(rows, headers=headers, tablefmt="grid"))
 
 if __name__ == "__main__":
         main()
