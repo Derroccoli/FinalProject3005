@@ -58,6 +58,8 @@ CREATE TABLE pt_session(
 	member_id INT,
 	trainer_id INT NOT NULL,
 	session_type TEXT NOT NULL,
+	start_time TIMESTAMP NOT NULL,
+	end_time TIMESTAMP NOT NULL,
 	FOREIGN KEY (member_id) REFERENCES members(member_id),
 	FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id)
 );
@@ -68,16 +70,18 @@ CREATE TABLE group_fitness(
 	trainer_id INT NOT NULL,
 	class_name TEXT NOT NULL,
 	description TEXT NOT NULL,
-	time TEXT NOT NULL,
-	date DATE NOT NULL,
+	start_time TIMESTAMP NOT NULL,
+	end_time TIMESTAMP NOT NULL,
 	FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id)
 );
 
 
-CREATE TABLE group_members(
-	group_id INT,
-	member_id INT,
-	FOREIGN KEY (group_id) REFERENCES group_fitness(group_id)
+CREATE TABLE group_members (
+    group_id INT,
+    member_id INT,
+    FOREIGN KEY (group_id) REFERENCES group_fitness (group_id),
+    FOREIGN KEY (member_id) REFERENCES members (member_id),
+    PRIMARY KEY (group_id, member_id)
 );
 
 
@@ -132,7 +136,14 @@ CREATE TABLE room_bookings(
 
 
 
-
+CREATE TABLE available_times(
+	availability_id SERIAL PRIMARY KEY,
+	start_time TIMESTAMP NOT NULL,
+	end_time TIMESTAMP NOT NULL,
+	booked BOOLEAN NOT NULL,
+	trainer_id INT NOT NULL,
+	FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id)
+)
 
 
 

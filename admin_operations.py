@@ -1,7 +1,7 @@
 import datetime
 from database_operations import *
 
-def adminFunctions(connection):
+def adminFunctions(connection, user):
     print("What would you like to do:")
 
     while True:
@@ -69,30 +69,31 @@ def bookARoom(connection):
 
     while True:
         try:
-            user_input = input("Enter start date and time (YYYY-MM-DD HH:MM:SS): ")
+            user_input = input("Enter start date and time (YYYY-MM-DD HH:MM): ")
             # Parse the user input into a datetime object
-            start_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M:%S")
+            start_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M")
             break
             
         except ValueError:
-            print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM:SS")
+            print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
+
+    numTimeSlots = int(input("Enter the number of 1 hour timeslots you would like to book"))
 
 
-    while True:
-        try:
-            user_input = input("Enter end and time (YYYY-MM-DD HH:MM:SS): ")
-            # Parse the user input into a datetime object
-            end_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M:%S")
-            break
-            
-        except ValueError:
-            print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM:SS")
+    end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
 
     room_id = int(input("Enter the room id of the room you'd like to book:"))
 
-    query = "INSERT INTO room_bookings (start_time, end_time, room_id) VALUES (%s, %s, %s)"
-    queryData = (start_time, end_time, room_id)
-    executeQuery(connection, query, queryData)
+    if(start_time > end_time):
+        print("Start time cannot be after end time, cannot book.")
+    elif(check_booking_overlap(connection, start_time, end_time, room_id)):
+        print("This room is booked for that time, cannot book.")
+    else:
+        query = "INSERT INTO room_bookings (start_time, end_time, room_id) VALUES (%s, %s, %s)"
+        queryData = (start_time, end_time, room_id)
+        executeQuery(connection, query, queryData)
+
+    
 
 def cancelARoomBooking(connection):
     room_booking_id = int(input("Enter the room booking id of the room booking you'd like to cancel"))
@@ -109,6 +110,15 @@ def removeOldRoomBookings(connection):
 
     executeQuery(connection, query)
 
+
+def check_booking_overlap(connection, start_time, end_time, room_id):
+    # Query to check for overlapping bookings
+    query = "SELECT EXISTS (SELECT 1 FROM room_bookings WHERE room_id = %s AND ((start_time, end_time) OVERLAPS (%s, %s)))"
+
+    queryData = (room_id, start_time, end_time)
+    overlap_exists = executeQuery(connection, query, queryData, fetchOne=True)
+
+    return overlap_exists[0]
 
 
 def equipmentFunctions(connection):
@@ -173,3 +183,28 @@ def removeOldEquipment(connection):
 
     result = executeQuery(connection, query, queryData)
 
+def groupClassFunctions(connection):
+    while True:
+        print("Room Booking Menu")
+        print("0. Go back to the main admin menu")
+        print("1. View equipment status")
+        print("2. Mark an equipment as maintained")
+        print("3. Mark all equipment as maintained")
+        print("4. Add new equipment")
+        print("5. Remove old equipment")
+        
+
+        uInput = int(input())
+
+        if (uInput == 0):
+            break
+        elif (uInput == 1):
+            viewEquipment(connection)
+        elif (uInput == 2):
+            markMaintained(connection)
+        elif (uInput == 3):
+            markAllMaintained(connection)
+        elif (uInput == 4):
+            addNewEquipment(connection)
+        elif (uInput == 5):
+            removeOldEquipment(connection)
