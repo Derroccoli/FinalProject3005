@@ -109,3 +109,9 @@ VALUES
     ('Room 2', 30),
     ('Room 3', 25),
     ('Room 4', 15);
+
+-- Inserting sample data into the 'room_bookings' table
+INSERT INTO room_bookings (start_time, end_time, room_id) 
+VALUES 
+    ('2023-01-01 12:00:00', '2023-01-01 14:00:00', 3),
+    ('2024-05-02 13:20:00', '2023-01-01 13:30:00', 2);

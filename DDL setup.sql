@@ -122,7 +122,13 @@ CREATE TABLE rooms(
 	room_capacity INT NOT NULL
 );
 
-
+CREATE TABLE room_bookings(
+	room_booking_id SERIAL PRIMARY KEY,
+	start_time TIMESTAMP NOT NULL,
+	end_time TIMESTAMP NOT NULL,
+	room_id INT NOT NULL,
+	FOREIGN KEY (room_id) REFERENCES rooms(room_id)
+);
 
 
 
