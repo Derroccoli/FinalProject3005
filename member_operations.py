@@ -133,14 +133,16 @@ def updateProfile(connection, user):
             break
 
 def updateFitnessGoals(connection, user):
-    #code to fetch user's fitness goals
-    query = "SELECT * FROM fitness_goals WHERE member_id = %s"
-    data = (user[0],)
-    fitnessGoals = executeQuery(connection, query, data)
-    headers = getHeaders(connection, "fitness_goals")
-    printTable(fitnessGoals, headers, False)
+    
     
     while True:
+        #code to fetch user's fitness goals
+        query = "SELECT * FROM fitness_goals WHERE member_id = %s"
+        data = (user[0],)
+        fitnessGoals = executeQuery(connection, query, data)
+        headers = getHeaders(connection, "fitness_goals")
+        printTable(fitnessGoals, headers, False)
+
         print("Would you like to add, remove or complete a fitness goals?\nYou can also input B to backtrack")
         userChoice = input("Please type in (add, remove or complete)").upper()
 
@@ -160,7 +162,6 @@ def updateFitnessGoals(connection, user):
 
             query = "INSERT INTO fitness_goals (member_id, description, completed) VALUES (%s, %s, %s)"
             data = (user[0], goal, "Incomplete")
-            print(data)
             executeQuery(connection, query, data)
             print("goal successfully added")
 
@@ -195,8 +196,15 @@ def updateFitnessGoals(connection, user):
                         deleteData = (elements[0],)
                         executeQuery(connection, deleteQuery, deleteData)
                         print("congratulation on completing the goal, it has been moved to your achievements")
+
+                        goalAdded = True
                         break
-                print("invalid ID entered")
+                
+                if goalAdded:
+                    break
+                else:
+                    print("invalid ID")
+                
         else:
             break
                 
@@ -210,7 +218,7 @@ def updateHealthMetric(connection, user):
         printTable(healthMetrics, headers, False)
 
         print("Would you like to add or remove a health metric\nYou can also input B to backtrack")
-        userChoice = input("Please type in (add or remove)").upper()
+        userChoice = input("Please type in (add or remove): ").upper()
 
         if userChoice not in ["ADD", "REMOVE", "B"]:
             print("Invalid option")
@@ -280,7 +288,7 @@ def updateRoutine(connection, user):
         
         if userChoice == "ADD":
             while True:
-                print("Please note that it is okay to enter 0 when prompted for duration\nif your exercise was not time gated")
+                print("\nPlease note that it is okay to enter 0 when prompted for duration\nif your exercise was not time gated")
                 exercise = input("What exercise did you do: ")
 
                 if not exercise:
@@ -319,7 +327,7 @@ def updateRoutine(connection, user):
                     continue
 
             while True:
-                duration = input("what is the duration: ")
+                duration = input("what is the duration in seconds: ")
 
                 if not duration:
                     print("please add a valid value")
