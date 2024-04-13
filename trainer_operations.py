@@ -61,6 +61,19 @@ def findByMemberId(connection):
         headers = getHeaders(connection, "members")
         print("Profile found: ")
         printTable(profile, headers, True)
+
+        query = "SELECT * FROM fitness_goals WHERE member_id = %s"
+        result = executeQuery(connection, query, data)
+        headers = getHeaders(connection, "fitness_goals")
+        print("Fitness goals")
+        printTable(result, headers)
+
+        query = "SELECT * FROM health_metrics WHERE member_id = %s"
+        result = executeQuery(connection, query, data)
+        headers = getHeaders(connection, "health_metrics")
+        print("Health metrics")
+        printTable(result, headers)
+
     else:
         print("No profile found for the provided member id")
 
