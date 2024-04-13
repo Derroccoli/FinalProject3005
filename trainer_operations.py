@@ -155,6 +155,9 @@ def bookTimebyAvailabilityId(connection, user):
 
     executeQuery(connection, query, queryData)
 
+    viewYourSchedule(connection, user)
+
+
 def bookTimeByTime(connection, user):
     viewYourSchedule(connection, user)
     start_time = None
@@ -174,6 +177,8 @@ def bookTimeByTime(connection, user):
     trainer_id = user[0]
 
     bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots)
+
+    viewYourSchedule(connection, user)
 
     
 
