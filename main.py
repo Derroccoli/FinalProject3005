@@ -1,4 +1,5 @@
 from database_operations import *
+from trainer_operations import *
 from admin_operations import *
 from member_operations import *
 from tabulate import tabulate
@@ -21,8 +22,10 @@ def main():
             memberWorkFlow(connect, user)
         elif personType == "MEMBER":
             user = signIn(connect, "TRAINER")
+            trainerFunctions(connect, user)
         else:
             user = signIn(connect, "ADMIN")
+            adminFunctions(connect, user)
 
         
              
@@ -49,20 +52,12 @@ def signIn(connection, type):
             headers = getHeaders(connection, "members")
             print("Profile found: ")
             printTable(profile, headers, True)
-            break
+            return profile
 
         else:
             print("No profile found for the provided email")
 
-    #Start their loops
-    if type == "MEMBER":
-        #put member menu function in here
-        print("do smth")
-    elif type == "TRAINER":
-        #put trainer menu function in here
-        print("do smth")
-    else:
-        adminFunctions(connection)
+        
 
 
 

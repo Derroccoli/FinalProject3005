@@ -47,20 +47,20 @@ VALUES
     (4, '2023-01-08', 'Yoga', 1, 15, 60);
 
 -- Inserting sample data into the 'pt_session' table
-INSERT INTO pt_session (member_id, trainer_id, session_type) 
+INSERT INTO pt_session (member_id, trainer_id, session_type, start_time, end_time) 
 VALUES 
-    (1, 1, 'Weight training'),
-    (2, 2, 'Cardio'),
-    (3, 3, 'Strength training'),
-    (4, 4, 'Flexibility');
+    (1, 1, 'Weight training', '2024-06-04 12:00', '2024-06-04 14:00'),
+    (2, 2, 'Cardio', '2024-02-24 08:00', '2024-02-24 10:00'),
+    (3, 3, 'Strength training', '2024-01-15 12:00', '2024-01-15 14:00'),
+    (4, 4, 'Flexibility', '2024-06-04 14:00', '2024-06-04 16:00');
 
 -- Inserting sample data into the 'group_fitness' table
-INSERT INTO group_fitness (trainer_id, class_name, description, time, date) 
+INSERT INTO group_fitness (trainer_id, class_name, description, start_time, end_time) 
 VALUES 
-    (1, 'Yoga Class', 'Beginner-friendly yoga class', '10:00 AM', '2023-01-10'),
-    (2, 'Bootcamp', 'High-intensity interval training', '6:00 PM', '2023-01-12'),
-    (3, 'Spin Class', 'Indoor cycling workout', '7:00 AM', '2023-01-14'),
-    (4, 'Zumba', 'Dance-based fitness class', '5:00 PM', '2023-01-16');
+    (1, 'Yoga Class', 'Beginner-friendly yoga class', '2023-02-07 12:00', '2023-02-07 14:00'),
+    (2, 'Bootcamp', 'High-intensity interval training', '2024-01-02 16:00', '2024-01-02 18:00'),
+    (3, 'Spin Class', 'Indoor cycling workout', '2024-06-04 10:00', '2024-06-04 12:00'),
+    (4, 'Zumba', 'Dance-based fitness class', '2024-07-21 12:00', '2024-07-21 14:00');
 
 -- Inserting sample data into the 'group_members' table
 INSERT INTO group_members (group_id, member_id) 
@@ -113,5 +113,10 @@ VALUES
 -- Inserting sample data into the 'room_bookings' table
 INSERT INTO room_bookings (start_time, end_time, room_id) 
 VALUES 
-    ('2023-01-01 12:00:00', '2023-01-01 14:00:00', 3),
-    ('2024-05-02 13:20:00', '2023-01-01 13:30:00', 2);
+    ('2023-01-01 12:00:00', '2023-01-01 14:00', 3),
+    ('2024-05-02 14:00:00', '2023-01-01 16:00', 2);
+
+INSERT INTO available_times (start_time, end_time, booked, trainer_id)
+VALUES
+    ('2023-02-01 12:00:00', '2023-02-01 14:00', TRUE, 1),
+    ('2024-05-03 14:00:00', '2023-05-03 16:00', FALSE, 2)
