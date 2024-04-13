@@ -556,10 +556,6 @@ def scheduleClass(connection, user):
             
         
 
-            
-
-
-
         
 
 def memberMenu():
