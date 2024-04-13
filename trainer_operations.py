@@ -170,17 +170,19 @@ def bookTimeByTime(connection, user):
 
     
 
-
-
 def bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots):
     end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
 
     query = "SELECT * FROM available_times WHERE booked = FALSE AND trainer_id = %s AND start_time <= %s AND end_time >= %s"
     queryData = (trainer_id, start_time, end_time)
     availableTime = executeQuery(connection, query, queryData, fetchOne=True)
+    print(queryData)
+    print(availableTime)
 
     if(availableTime == None):
         print("There is no time slot there to set as booked")
+        return False
+    
     else:
         if(availableTime[1] == start_time and availableTime[2] == end_time):
             query = "UPDATE available_times SET booked = TRUE WHERE availability_id = %s"
@@ -219,3 +221,6 @@ def bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots):
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, FALSE)"
             queryData = (end_time, availableTime[2], trainer_id)
             executeQuery(connection, query, queryData)
+
+
+    return True

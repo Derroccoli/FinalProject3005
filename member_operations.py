@@ -1,5 +1,6 @@
 from database_operations import *
 from main import *
+from trainer_operations import *
 
 def memberWorkFlow(connect, user):
     while True:
@@ -305,7 +306,7 @@ def updateRoutine(connection, user):
             while True:
                 reps = input("How many reps: ")
 
-                if not sets:
+                if not reps:
                     print("please add a valid value")
                     continue
                 
@@ -320,7 +321,7 @@ def updateRoutine(connection, user):
             while True:
                 duration = input("what is the duration: ")
 
-                if not sets:
+                if not duration:
                     print("please add a valid value")
                     continue
                 
@@ -386,10 +387,213 @@ def displayAchievements(connection, user):
 
 
 def schedulePersonalSession(connection, user):
-    print()
+    while True:
+        print("Here are the trainers: ")
+        trainerQuery = "SELECT * FROM trainers"
+        trainerHeader = getHeaders(connection, "trainers")
+        trainers = executeQuery(connection, trainerQuery)
+        printTable(trainers, trainerHeader)
+        print()
+        print("Here's the schedule")
+        query = "SELECT * FROM available_times"
+        availableTimes = executeQuery(connection, query)
+        headers = getHeaders(connection, "available_times")
+        printTable(availableTimes, headers)
+
+        while True:
+            trainerId = input("Input the trainer Id of the trainer you would like to book with: ")
+
+            for trainer in trainers:
+                if trainerId == str(trainer[0]):
+                    isTrainer = True
+                
+            if isTrainer:
+                break
+        
+        while True:
+            try:
+                user_input = input("Enter start date and time of the time you would like to book(YYYY-MM-DD HH:MM): ")
+                # Parse the user input into a datetime object
+                start_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M")
+                break
+
+            except ValueError:
+                print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
+
+        while True:
+            numTimeSlots = int(input("How many hours would you like to set as booked: "))
+
+            if not numTimeSlots:
+                print("invalid value")
+                continue
+
+            break
+                
+            
+        booked = bookTimeByTimeAnyone(connection, trainerId, start_time, numTimeSlots)
+
+        print(booked)
+
+        if booked == False:
+            print("invalid number of hours")
+            continue
+
+        else:
+            while True:
+                #get parameters for session, create a bill, ask the user to pay the bill, if the bill is payed create a payment and then, create the session
+                sessionType = input("What kind of session is this (ex: cardio, weights, etc.): ")
+
+                if not sessionType:
+                    print("Must input a value")
+                    continue
+                
+                break
+            
+            #create bill
+            end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
+            price = numTimeSlots * 30
+
+            billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
+            billData = (price, user[0])
+            bill_id = executeQuery(connection, billQuery, billData, False, True)
+
+            print("Bill created, it will be %i dollars", price)
+            
+            while True:
+                pay = input("Would you like to pay?(Y or N): ").upper()
+
+                if pay not in ["Y", "N"]:
+                    print("invalid input please try again")
+                    continue
+                
+                break
+            
+            if pay == "Y":
+                #create payment
+                paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
+                payData = (bill_id, price, datetime.datetime.today(), "Not Processed")
+                executeQuery(connection, paymentQuery, payData)
+                
+
+
+            else:
+                print("Scheduling cancelled")
+                query = "UPDATE available_times SET booked = FALSE WHERE start_time = %s AND end_time = %s"
+                queryData = (start_time, end_time)
+                executeQuery(connection, query, queryData)
+            
+
+            query = "INSERT INTO pt_session (member_id, trainer_id, session_type, start_time, end_time) VALUES (%s, %s, %s, %s, %s)"
+            data = (user[0], trainerId, sessionType, start_time, end_time)
+            executeQuery(connection, query, data)
+            print(" Session successfully created")
 
 def scheduleClass(connection, user):
-    print()
+    while True:
+        print("Here are the trainers: ")
+        trainerQuery = "SELECT * FROM trainers"
+        trainerHeader = getHeaders(connection, "trainers")
+        trainers = executeQuery(connection, trainerQuery)
+        printTable(trainers, trainerHeader)
+        print()
+        print("Here's the schedule")
+        query = "SELECT * FROM available_times"
+        availableTimes = executeQuery(connection, query)
+        headers = getHeaders(connection, "available_times")
+        printTable(availableTimes, headers)
+
+        while True:
+            trainerId = int(input("Input the trainer Id of the trainer you would like to book with: "))
+
+            for trainer in trainers:
+                if trainerId == trainer[0]:
+                    isTrainer = True
+                
+            if isTrainer:
+                break
+        
+        while True:
+            try:
+                user_input = input("Enter start date and time of the time you would like to book(YYYY-MM-DD HH:MM): ")
+                # Parse the user input into a datetime object
+                start_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M")
+                break
+
+            except ValueError:
+                print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
+
+        while True:
+            numTimeSlots = int(input("How many hours would you likse to set as booked: "))
+
+            print(trainerId, start_time, numTimeSlots)
+            print(type(trainerId), type(start_time), type(numTimeSlots))
+
+            if not numTimeSlots:
+                print("invalid value")
+                continue
+
+            break
+
+        
+
+        booked = bookTimeByTimeAnyone(connection, trainerId, start_time, numTimeSlots)
+
+
+        print(booked)
+
+        if booked == False:
+            print("invalid number of hours")
+            continue
+
+        else:
+            while True:
+                #get parameters for session, create a bill, ask the user to pay the bill, if the bill is payed create a payment and then, create the session
+                sessionType = input("What kind of session is this (ex: cardio, weights, etc.): ")
+
+                if not sessionType:
+                    print("Must input a value")
+                    continue
+                
+                break
+            
+            #create bill
+            end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
+            price = numTimeSlots * 30
+
+            billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
+            billData = (price, user[0])
+            bill_id = executeQuery(connection, billQuery, billData, False, True)
+
+            print("Bill created, it will be %i dollars", price)
+            
+            while True:
+                pay = input("Would you like to pay?(Y or N): ").upper()
+
+                if pay not in ["Y", "N"]:
+                    print("invalid input please try again")
+                    continue
+                
+                break
+            
+            if pay == "Y":
+                #create payment
+                paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
+                payData = (bill_id, price, datetime.datetime.today(), "Not Processed")
+                executeQuery(connection, paymentQuery, payData)
+                
+
+
+            else:
+                print("Scheduling cancelled")
+                query = "UPDATE available_times SET booked = FALSE WHERE start_time = %s AND end_time = %s"
+                queryData = (start_time, end_time)
+                executeQuery(connection, query, queryData)
+            
+
+            query = "INSERT INTO pt_session (member_id, trainer_id, session_type, start_time, end_time) VALUES (%s, %s, %s, %s, %s)"
+            data = (user[0], trainerId, sessionType, start_time, end_time)
+            executeQuery(connection, query, data)
+            print(" Session successfully created")
 
 def memberMenu():
      print("What would you like to do?")
@@ -417,5 +621,5 @@ def schedulingMenu():
     print("Welcome to the scheduling zone")
     print("What would you like to do?")
     print("1. Schedule a personal training session")
-    print("2. Schedule for group classes")
+    print("2. Schedule for a group class")
 

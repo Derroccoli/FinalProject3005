@@ -9,7 +9,7 @@ def connect_database():
         connection = psycopg2.connect(
             dbname="test",
             user="postgres",
-            password="Cmilk333",
+            password="postgres",
             host="localhost",
             port="5432"
         )
@@ -22,7 +22,7 @@ def connect_database():
 
 
 #function for query execution
-def executeQuery(connection, query, data=None, fetchOne=False):
+def executeQuery(connection, query, data=None, fetchOne=False, lastInsert=False):
     try:
         cursor = connection.cursor()
 
@@ -30,6 +30,10 @@ def executeQuery(connection, query, data=None, fetchOne=False):
             cursor.execute(query, data)
         else:
             cursor.execute(query)
+
+        if lastInsert:
+            insert_id = cursor.lastrowid
+            return insert_id
         
         if query.strip().split()[0].upper() == 'SELECT':
             if fetchOne:
