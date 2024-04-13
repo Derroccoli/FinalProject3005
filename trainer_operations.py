@@ -164,9 +164,16 @@ def bookTimeByTime(connection, user):
 
     numTimeSlots = int(input("How many hours would you like to set as booked"))
 
-    end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
-
     trainer_id = user[0]
+
+    bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots)
+
+    
+
+
+
+def bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots):
+    end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
 
     query = "SELECT * FROM available_times WHERE booked = FALSE AND trainer_id = %s AND start_time <= %s AND end_time >= %s"
     queryData = (trainer_id, start_time, end_time)
@@ -185,7 +192,7 @@ def bookTimeByTime(connection, user):
             executeQuery(connection, query, queryData)
 
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, FALSE)"
-            queryData = (end_time, availableTime[2], user[0])
+            queryData = (end_time, availableTime[2], trainer_id)
             executeQuery(connection, query, queryData)
 
         elif(availableTime[2] == end_time):
@@ -194,7 +201,7 @@ def bookTimeByTime(connection, user):
             executeQuery(connection, query, queryData)
 
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, FALSE)"
-            queryData = (availableTime[1], start_time, user[0])
+            queryData = (availableTime[1], start_time, trainer_id)
             executeQuery(connection, query, queryData)
         else:
             query = f"DELETE FROM available_times WHERE availability_id = %s"
@@ -202,17 +209,13 @@ def bookTimeByTime(connection, user):
             executeQuery(connection, query, queryData)
 
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, FALSE)"
-            queryData = (availableTime[1], start_time, user[0])
+            queryData = (availableTime[1], start_time, trainer_id)
             executeQuery(connection, query, queryData)
 
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, TRUE)"
-            queryData = (start_time, end_time, user[0])
+            queryData = (start_time, end_time, trainer_id)
             executeQuery(connection, query, queryData)
 
             query = "INSERT INTO available_times (start_time, end_time, trainer_id, booked) VALUES (%s, %s, %s, FALSE)"
-            queryData = (end_time, availableTime[2], user[0])
+            queryData = (end_time, availableTime[2], trainer_id)
             executeQuery(connection, query, queryData)
-
-
-
-
