@@ -472,6 +472,7 @@ def schedulePersonalSession(connection, user):
             bills = executeQuery(connection, billQuery)
             printTable(bills, billHeader)
 
+    
             
 
             print("Bill created, it will be %i dollars", price)
