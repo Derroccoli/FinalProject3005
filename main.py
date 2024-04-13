@@ -7,6 +7,8 @@ import datetime
 def main():
         connect = connect_database()
 
+        showAllMembers(connect)
+
         print("Welcome to the DK fitness app")
         regOrLog = register_or_login()
         if regOrLog == "R":
@@ -19,7 +21,7 @@ def main():
         if personType == "MEMBER":
             user = signIn(connect, "MEMBER")
             memberWorkFlow(connect, user)
-        elif personType == "MEMBER":
+        elif personType == "TRAINER":
             user = signIn(connect, "TRAINER")
         else:
             user = signIn(connect, "ADMIN")
@@ -49,20 +51,10 @@ def signIn(connection, type):
             headers = getHeaders(connection, "members")
             print("Profile found: ")
             printTable(profile, headers, True)
-            break
+            return profile
 
         else:
             print("No profile found for the provided email")
-
-    #Start their loops
-    if type == "MEMBER":
-        #put member menu function in here
-        print("do smth")
-    elif type == "TRAINER":
-        #put trainer menu function in here
-        print("do smth")
-    else:
-        adminFunctions(connection)
 
 
 

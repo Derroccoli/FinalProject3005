@@ -17,10 +17,10 @@ VALUES
 -- Inserting sample data into the 'fitness_goals' table
 INSERT INTO fitness_goals (member_id, description, completed) 
 VALUES 
-    (1, 'Lose 10 pounds', B'1'),
-    (2, 'Run a marathon',  B'0'),
-    (3, 'Gain muscle mass', B'0'),
-    (4, 'Improve flexibility', B'1');
+    (1, 'Lose 10 pounds', 'Incomplete'),
+    (2, 'Run a marathon',  'Incomplete'),
+    (3, 'Gain muscle mass', 'Incomplete'),
+    (4, 'Improve flexibility', 'Incomplete');
 
 -- Inserting sample data into the 'achievements' table
 INSERT INTO achievements (member_id, date_of_accomplishment, feat) 
@@ -81,10 +81,10 @@ VALUES
 -- Inserting sample data into the 'payments' table
 INSERT INTO payments (bill_id, amount, date, processed) 
 VALUES 
-    (1, 50, '2023-01-10', B'1'),
-    (2, 75, '2023-01-12', B'1'),
-    (3, 60, '2023-01-14', B'0'),
-    (4, 80, '2023-01-16', B'0');
+    (1, 50, '2023-01-10', 'incomplete'),
+    (2, 75, '2023-01-12', 'incomplete'),
+    (3, 60, '2023-01-14', 'incomplete'),
+    (4, 80, '2023-01-16', 'incomplete');
 
 -- Inserting sample data into the 'admin_staff' table
 INSERT INTO admin_staff (firstName, lastName, email) 

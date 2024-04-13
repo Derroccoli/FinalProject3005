@@ -16,8 +16,8 @@ def memberWorkFlow(connect, user):
             while True:
                 headers = getHeaders(connect, "members")
                 profileMenu()
-                profileValues = ["1","2","3","4"]
-                profileChoice = input("Please type in (1 - 4): ")
+                profileValues = ["1","2","3","4","B"]
+                profileChoice = input("Please type in (1 - 4): ").upper()
 
                 if profileChoice not in profileValues:
                     print("invalid option")
@@ -33,15 +33,18 @@ def memberWorkFlow(connect, user):
                 elif profileChoice == "3":
                     updateHealthMetric(connect, user)
                 
-                else:
+                elif profileChoice == "4":
                     updateRoutine(connect, user)
-        
+
+                else:
+                    break
+
         elif menuChoice == "2":
             while True:
                 displayMenu()
                 displayChoice = input("Please input your decision (1 - 3): ")
 
-                if displayChoice not in ["1", "2", "3"]:
+                if displayChoice not in ["1", "2", "3", "B"]:
                     print("invalid option")
                     continue
 
@@ -56,8 +59,9 @@ def memberWorkFlow(connect, user):
                     print("What else would like to see? \n")
 
                 else:
-                    break
-
+                    print("Here are your Achievements!")
+                    displayAchievements(connect, user)
+                    print("What else would like to see? \n")
 
         else:
             break
@@ -88,7 +92,7 @@ def updateProfile(connection, user):
                 print("email successfully changed.")
                 break
         
-        if profileInput == "2":
+        elif profileInput == "2":
             while True:
                 newPhoneNumber = input("Please input your new phone number: ")
 
@@ -102,23 +106,22 @@ def updateProfile(connection, user):
                 print("phone number successfully changed.")
                 break
 
-        if profileInput.upper() == "B":
+        else:
             break
 
 def updateFitnessGoals(connection, user):
     #code to fetch user's fitness goals
+    query = "SELECT * FROM fitness_goals WHERE member_id = %s"
+    data = (user[0],)
+    fitnessGoals = executeQuery(connection, query, data)
+    headers = getHeaders(connection, "fitness_goals")
+    printTable(fitnessGoals, headers, False)
     
     while True:
-        query = "SELECT * FROM fitness_goals WHERE member_id = %s"
-        data = (user[0],)
-        fitnessGoals = executeQuery(connection, query, data, True)
-        headers = getHeaders(connection, "fitness_goals")
-        printTable(fitnessGoals, headers)
-
-        print("Would you like to add, remove or complete a fitness goals?")
+        print("Would you like to add, remove or complete a fitness goals?\nYou can also input B to backtrack")
         userChoice = input("Please type in (add, remove or complete)").upper()
 
-        if userChoice not in ["ADD", "REMOVE", "COMPLETE"]:
+        if userChoice not in ["ADD", "REMOVE", "COMPLETE", "B"]:
             print("Invalid choice")
             continue
 
@@ -133,7 +136,8 @@ def updateFitnessGoals(connection, user):
                 break
 
             query = "INSERT INTO fitness_goals (member_id, description, completed) VALUES (%s, %s, %s)"
-            data = (user[0], goal, "No")
+            data = (user[0], goal, "Incomplete")
+            print(data)
             executeQuery(connection, query, data)
             print("goal successfully added")
 
@@ -143,46 +147,49 @@ def updateFitnessGoals(connection, user):
                 print("Please enter the fitness ID for the goal you would like to Delete")
                 idInput = input("ID: ")
                 for elements in fitnessGoals:
-                    if idInput == elements[0]:
+                    if idInput == str(elements[0]):
+                        print("proc")
                         deleteQuery = "DELETE FROM fitness_goals WHERE fitness_id = %s"
-                        data = (elements[0])
+                        data = (elements[0],)
                         executeQuery(connection, deleteQuery, data)
                         break
                     
                 print("invalid ID entered")
 
-        else:
+        elif userChoice == "COMPLETE":
             while True:
                 printTable(fitnessGoals, headers)
                 print("Please enter the fitness ID for the goal you would like to complete")
                 idInput = input("ID: ")
                 for elements in fitnessGoals:
-                    if idInput == elements[0]:
+                    if idInput == str(elements[0]):
                         #add an achievement and delete the goal
                         addQuery = "INSERT INTO achievements (member_id, date_of_accomplishment, feat) VALUES (%s,%s,%s)"
                         addData = (user[0], datetime.datetime.today(), elements[2])
                         executeQuery(connection, addQuery, addData)
 
                         deleteQuery  = "DELETE FROM fitness_goals WHERE fitness_id = %s"
-                        deleteData = (elements[0])
+                        deleteData = (elements[0],)
                         executeQuery(connection, deleteQuery, deleteData)
                         print("congratulation on completing the goal, it has been moved to your achievements")
                         break
                 print("invalid ID entered")
+        else:
+            break
                 
 
 def updateHealthMetric(connection, user):
     while True:
         query = "SELECT * FROM health_metrics WHERE member_id = %s"
         data = (user[0],)
-        healthMetrics = executeQuery(connection, query, data, True)
+        healthMetrics = executeQuery(connection, query, data)
         headers = getHeaders(connection, "health_metrics")
-        printTable(healthMetrics, headers)
+        printTable(healthMetrics, headers, False)
 
-        print("Would you like to add or remove a health metric")
+        print("Would you like to add or remove a health metric\nYou can also input B to backtrack")
         userChoice = input("Please type in (add or remove)").upper()
 
-        if userChoice not in ["ADD", "REMOVE"]:
+        if userChoice not in ["ADD", "REMOVE", "B"]:
             print("Invalid option")
             continue
 
@@ -210,33 +217,41 @@ def updateHealthMetric(connection, user):
             executeQuery(connection, query, data)
             print("metric successfully added")
 
-        else:
+        elif userChoice == "REMOVE":
             while True:
                 printTable(healthMetrics, headers)
                 print("Please enter the metric ID for the health metric you would like to Delete")
                 idInput = input("ID: ")
+                if not idInput:
+                    print("invalid input")
+                    continue
+
                 for elements in healthMetrics:
-                    if idInput == elements[0]:
+                    if idInput == str(elements[0]):
                         deleteQuery = "DELETE FROM health_metrics WHERE metric_id = %s"
-                        data = (elements[0])
+                        data = (elements[0],)
                         executeQuery(connection, deleteQuery, data)
-                        break
+                        finishedRemoving = True
+                        
+                if finishedRemoving:
+                    break
                     
-                print("invalid ID entered")
+        else:
+            break
 
 
 def updateRoutine(connection, user):
     while True:
         query = "SELECT * FROM exercises WHERE member_id = %s"
         data = (user[0],)
-        exercises = executeQuery(connection, query, data, True)
+        exercises = executeQuery(connection, query, data)
         headers = getHeaders(connection, "exercises")
-        printTable(exercises, headers)
+        printTable(exercises, headers, False)
 
-        print("Would you like to add or remove an exercise routine")
+        print("Would you like to add or remove an exercise routine\nYou can also input B to backtrack")
         userChoice = input("Please type in (add or remove)").upper()
 
-        if userChoice not in ["ADD", "REMOVE"]:
+        if userChoice not in ["ADD", "REMOVE", "B"]:
             print("Invalid option")
             continue
         
@@ -299,10 +314,32 @@ def updateRoutine(connection, user):
             executeQuery(connection, query, data)
             print("exercise successfully added")
 
+        elif userChoice == "REMOVE":
+            while True:
+                printTable(exercises, headers)
+                print("Please enter the exercise ID for the exercise you would like to remove from your routine")
+                idInput = input("ID: ")
+                if not idInput:
+                    print("invalid input")
+                    continue
+
+                for elements in exercises:
+                    if idInput == str(elements[0]):
+                        deleteQuery = "DELETE FROM exercises WHERE routine_id = %s"
+                        data = (elements[0],)
+                        executeQuery(connection, deleteQuery, data)
+                        finishedRemoving = True
+                        
+                if finishedRemoving:
+                    break
+
+        else:
+            break
+
 def displayHealth(connection, user):
     query = "SELECT * FROM health_metrics WHERE member_id = %s"
     data = (user[0],)
-    healthMetrics = executeQuery(connection, query, data, True)
+    healthMetrics = executeQuery(connection, query, data)
     headers = getHeaders(connection, "health_metrics")
     printTable(healthMetrics, headers)
 
@@ -310,7 +347,7 @@ def displayHealth(connection, user):
 def displayExercise(connection, user):
     query = "SELECT * FROM exercises WHERE member_id = %s"
     data = (user[0],)
-    exercises = executeQuery(connection, query, data, True)
+    exercises = executeQuery(connection, query, data)
     headers = getHeaders(connection, "exercises")
     printTable(exercises, headers)
 
@@ -318,17 +355,16 @@ def displayExercise(connection, user):
 def displayAchievements(connection, user):
     query = "SELECT * FROM achievements WHERE member_id = %s"
     data = (user[0],)
-    achievements = executeQuery(connection, query, data, True)
-    headers = getHeaders(connection, "achievments")
+    achievements = executeQuery(connection, query, data)
+    headers = getHeaders(connection, "achievements")
     printTable(achievements, headers)
-
 
 def memberMenu():
      print("What would you like to do?")
      print("1. Update Personal and exercise information")
      print("2. Check exercise routines, fitness achievements and health statistics")
      print("3. Book personal or group training sessions")
-     print("Q. Exit\n")
+     print("Q. Exit App\n")
 
 def profileMenu():
      print("What would you like to update?")
@@ -336,10 +372,12 @@ def profileMenu():
      print("2. Fitness goals")
      print("3. Health metrics")
      print("4. Exercise routine")
+     print("B. BackTrack\n")
 
 def displayMenu():
     print("What would you like to check?")
     print("1. Health statistics?")
     print("2. Exercise routines?")
     print("3. Achievements")
+    print("B. BackTrack\n")
 
