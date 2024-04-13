@@ -50,8 +50,15 @@ def signIn(connection, type):
 
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
+        print(profile)
         if profile:
-            headers = getHeaders(connection, "members")
+            if type == "MEMBER":
+                headers = getHeaders(connection, "members")
+            elif type == "TRAINER":
+                headers = getHeaders(connection, "trainers")
+            else:
+                headers = getHeaders(connection, "admin_staff")
+            
             print("Profile found: ")
             printTable(profile, headers, True)
             return profile
