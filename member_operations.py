@@ -5,8 +5,8 @@ from trainer_operations import *
 def memberWorkFlow(connect, user):
     while True:
         memberMenu()
-        choices = ["1", "2", "3", "Q"]
-        menuChoice = input("Please type in (1, 2, or 3): ")
+        choices = ["1", "2", "3", "0"]
+        menuChoice = input("Please type in (0-3): ")
         print()
         
         if menuChoice not in choices:
@@ -17,8 +17,8 @@ def memberWorkFlow(connect, user):
             while True:
                 headers = getHeaders(connect, "members")
                 profileMenu()
-                profileValues = ["1","2","3","4","B"]
-                profileChoice = input("Please type in (1 - 4): ").upper()
+                profileValues = ["1","2","3","4","0"]
+                profileChoice = input("Please type in (0 - 4): ").upper()
 
                 if profileChoice not in profileValues:
                     print("invalid option")
@@ -43,9 +43,9 @@ def memberWorkFlow(connect, user):
         elif menuChoice == "2":
             while True:
                 displayMenu()
-                displayChoice = input("Please input your decision (1 - 3): ")
+                displayChoice = input("Please input your decision (0 - 3): ")
 
-                if displayChoice not in ["1", "2", "3", "B"]:
+                if displayChoice not in ["1", "2", "3", "0"]:
                     print("invalid option")
                     continue
 
@@ -70,17 +70,24 @@ def memberWorkFlow(connect, user):
         elif menuChoice == "3":
             while True:
                 schedulingMenu()
-                scheduleChoice = input("Please input 1 or 2 (you can also do B to backtrack)")
+                scheduleChoice = input("Please input (0-6)")
 
-                if scheduleChoice not in ["1", "2", "B"]:
+                if scheduleChoice not in ["1", "2", "3", "4", "5", "6", "0"]:
                     print("invalid option")
                     continue
 
                 if scheduleChoice == "1":
                     schedulePersonalSession(connect, user)
-                
                 elif scheduleChoice == "2":
+                    reschedulePersonalSession(connect, user)
+                elif scheduleChoice == "3":
+                    cancelPersonalSession(connect, user)
+                elif scheduleChoice == "4":
+                    viewYourPersonalSessions(connect, user)
+                elif scheduleChoice == "5":
                     scheduleClass(connect, user)
+                elif scheduleChoice == "6":
+                    viewYourClasses(connect, user)
                 
                 else:
                     break
@@ -92,12 +99,13 @@ def memberWorkFlow(connect, user):
 def updateProfile(connection, user):
      print("Above is your profile, what would you like to change?")
      while True:
+        print("0. backout")
         print("1. Email")
         print("2. Phone Number")
-        print("B. backout")
-        profileInput = input("Input 1 or 2: ")
+        
+        profileInput = input("Input (0-2): ")
 
-        if profileInput.upper() not in ["1","2","B"]:
+        if profileInput.upper() not in ["1","2","0"]:
              print("invalid option")
              continue
         
@@ -463,14 +471,16 @@ def schedulePersonalSession(connection, user):
 
             billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
             billData = (price, user[0])
-            bill_id = executeQuery(connection, billQuery, billData, False, True)
-            print(bill_id)
+            bill_id = executeQuery(connection, billQuery, billData, True, True)
 
-            print("Here are the trainers: ")
-            billQuery = "SELECT * FROM bills"
+
+            print("Here is your bill: ")
+            billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
             billHeader = getHeaders(connection, "bills")
             bills = executeQuery(connection, billQuery)
             printTable(bills, billHeader)
+
+            
 
             print("Bill created, it will be %i dollars", price)
             
@@ -493,6 +503,16 @@ def schedulePersonalSession(connection, user):
                 data = (user[0], trainerId, sessionType, start_time, end_time)
                 executeQuery(connection, query, data)
                 print(" Session successfully created")
+
+
+                query = "SELECT * FROM pt_session WHERE member_id = %s and session_id = (SELECT MAX(session_id) from pt_session)"
+                queryData = (user[0],)
+
+                session = executeQuery(connection, query, queryData, fetchOne=True)
+
+                headers = getHeaders(connection, "pt_session")
+                printTable(session, headers, one=True)
+
                 break
 
                 
@@ -505,8 +525,103 @@ def schedulePersonalSession(connection, user):
                 executeQuery(connection, query, queryData)
                 break
             
+def reschedulePersonalSession(connection, user):
+    viewYourPersonalSessions(connection, user)
+    session_id = int(input("What is the session_id of the personal training session you would like to reschedule: "))
+    query = "SELECT * FROM pt_session WHERE member_id = %s and session_id = %s"
+    queryData = (user[0], session_id)
 
-            
+    session = executeQuery(connection, query, queryData, fetchOne=True)
+
+    if(session != None):
+        headers = getHeaders(connection, "pt_session")
+        printTable(session, headers, one=True)
+
+        trainer_id = session[2]
+        print(trainer_id)
+
+        print("Here are the times your trainer is available for")
+        query = "SELECT * FROM available_times WHERE trainer_id = %s"
+        queryData = (trainer_id,)
+        availableTimes = executeQuery(connection, query, queryData)
+        headers = getHeaders(connection, "available_times")
+        printTable(availableTimes, headers)
+
+        start_time = None
+        while True:
+            try:
+                user_input = input("Enter start date and time of the time you would like to book(YYYY-MM-DD HH:MM): ")
+                # Parse the user input into a datetime object
+                start_time = datetime.datetime.strptime(user_input, "%Y-%m-%d %H:%M")
+                break
+
+            except ValueError:
+                print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
+
+        numTimeSlots = int(input("How many hours would you like to set as booked: "))
+
+        
+        end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
+
+        query = "SELECT * FROM available_times WHERE booked = FALSE AND trainer_id = %s AND start_time <= %s AND end_time >= %s"
+        queryData = (trainer_id, start_time, end_time)
+        availableTime = executeQuery(connection, query, queryData, fetchOne=True)
+
+        if(availableTime == None):
+            print("There is no time slot there to set as booked")
+        else:
+            query = "SELECT start_time, end_time FROM pt_session WHERE session_id = %s"
+            queryData = (session_id,)
+            result = executeQuery(connection, query, queryData)
+
+            query = "UPDATE available_times SET booked = FALSE WHERE start_time = %s AND end_time = %s"
+            queryData = (result[0][0], result[0][1])
+            executeQuery(connection, query, queryData)
+
+            query = "UPDATE pt_session SET start_time = %s, end_time = %s WHERE session_id = %s"
+            queryData = (start_time, end_time, session_id)
+            executeQuery(connection, query, queryData)
+
+            query = "SELECT * FROM pt_session WHERE member_id = %s and session_id = %s"
+            queryData = (user[0], session_id)
+
+            session = executeQuery(connection, query, queryData, fetchOne=True)
+
+            headers = getHeaders(connection, "pt_session")
+            printTable(session, headers, one=True)
+
+            print("Your session has been updated.")
+
+    else:
+        print("There is no session of yours that matches")
+    
+def cancelPersonalSession(connection, user):
+    viewYourPersonalSessions(connection, user)
+    print("There are no refunds")
+    session_id = int(input("What is the session_id of the personal training session you would like to cancel: "))
+
+    query = "DELETE FROM pt_session WHERE member_id = %s and session_id = %s"
+    queryData = (user[0], session_id)
+
+    executeQuery(connection, query, queryData)
+
+    query = "SELECT start_time, end_time FROM pt_session WHERE session_id = %s"
+    queryData = (session_id,)
+    result = executeQuery(connection, query, queryData)
+    query = "UPDATE available_times SET booked = FALSE WHERE start_time = %s AND end_time = %s"
+    queryData = (result[0][0], result[0][1])
+    executeQuery(connection, query, queryData)
+
+    viewYourPersonalSessions(connection, user)
+
+def viewYourPersonalSessions(connection, user):
+    print("Your personal sessions: ")
+    query = "SELECT * FROM pt_session WHERE member_id = %s"
+    queryData = (user[0],)
+    result = executeQuery(connection, query, queryData)
+    headers = getHeaders(connection, "pt_session")
+    printTable(result, headers)
+
 
 def scheduleClass(connection, user):
     while True:
@@ -556,6 +671,8 @@ def scheduleClass(connection, user):
             data = (groupId, user[0])
             executeQuery(connection, query, data)
             print("Added to Class")
+
+            viewYourClasses(connection, user)
             break
 
         else:
@@ -563,34 +680,48 @@ def scheduleClass(connection, user):
             break
             
         
-
+def viewYourClasses(connection, user):
+    print("Your personal sessions: ")
+    query = "SELECT gf.* FROM group_fitness gf JOIN group_members gm ON gf.group_id = gm.group_id WHERE gm.member_id = %s"
+    queryData = (user[0],)
+    result = executeQuery(connection, query, queryData)
+    headers = getHeaders(connection, "group_fitness")
+    printTable(result, headers)
         
 
 def memberMenu():
      print("What would you like to do?")
+     print("0. Exit App\n")
      print("1. Update Personal and exercise information")
      print("2. Check exercise routines, fitness achievements and health statistics")
      print("3. Book personal or group training sessions")
-     print("Q. Exit App\n")
+     
 
 def profileMenu():
      print("What would you like to update?")
+     print("0. BackTrack\n")
      print("1. Profile")
      print("2. Fitness goals")
      print("3. Health metrics")
      print("4. Exercise routine")
-     print("B. BackTrack\n")
+     
 
 def displayMenu():
     print("What would you like to check?")
+    print("0. BackTrack\n")
     print("1. Health statistics?")
     print("2. Exercise routines?")
     print("3. Achievements")
-    print("B. BackTrack\n")
+    
 
 def schedulingMenu():
     print("Welcome to the scheduling zone")
     print("What would you like to do?")
+    print("0. BackTrack\n")
     print("1. Schedule a personal training session")
-    print("2. Schedule for a group class")
+    print("2. Reschedule a personal training session")
+    print("3. Cancel a personal training session")
+    print("4. View your personal training sessions")
+    print("5. Register for a group class")
+    print("6. View your group classes")
 

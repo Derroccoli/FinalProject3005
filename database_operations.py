@@ -9,7 +9,7 @@ def connect_database():
         connection = psycopg2.connect(
             dbname="test",
             user="postgres",
-            password="postgres",
+            password="Cmilk333",
             host="localhost",
             port="5432"
         )
@@ -45,7 +45,7 @@ def executeQuery(connection, query, data=None, fetchOne=False, lastInsert=False)
             
         else:
             connection.commit()
-            print("Query executed successfully")
+            #print("Query executed successfully")
     except psycopg2.Error as e:
         print("error executing: ", e)
     
