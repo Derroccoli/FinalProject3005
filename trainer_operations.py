@@ -51,7 +51,7 @@ def viewAllMembers(connection):
     printTable(members, headers, False)
 
 def findByMemberId(connection):
-    member_id = int(input("What is the member id of the member you'd like to find"))
+    member_id = int(input("What is the member id of the member you'd like to find: "))
     query = "SELECT * FROM members WHERE member_id = %s"
 
 
@@ -65,7 +65,7 @@ def findByMemberId(connection):
         print("No profile found for the provided member id")
 
 def findByFirstName(connection):
-    firstName = input("What is the first name of the member you'd like to find")
+    firstName = input("What is the first name of the member you'd like to find: ")
     query = "SELECT * FROM members WHERE firstName = %s"
 
     data = (firstName,)
@@ -130,7 +130,7 @@ def addAvailableTime(connection, user):
         except ValueError:
             print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
 
-    numTimeSlots = int(input("Enter the number of 1 hour timeslots you would like to set yourself available for after the start time."))
+    numTimeSlots = int(input("Enter the number of 1 hour timeslots you would like to set yourself available for after the start time: "))
 
     end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
 
@@ -147,7 +147,7 @@ def addAvailableTime(connection, user):
 
 def bookTimebyAvailabilityId(connection, user):
     viewYourSchedule(connection, user)
-    availability_id = int(input("What is the availability id of the time slot you would like to set as booked"))
+    availability_id = int(input("What is the availability id of the time slot you would like to set as booked: "))
 
     query = "UPDATE available_times SET booked = TRUE WHERE availability_id = %s"
 
@@ -172,7 +172,7 @@ def bookTimeByTime(connection, user):
         except ValueError:
             print("Invalid input format. Please enter a date and time in the format YYYY-MM-DD HH:MM")
 
-    numTimeSlots = int(input("How many hours would you like to set as booked"))
+    numTimeSlots = int(input("How many hours would you like to set as booked: "))
 
     trainer_id = user[0]
 
