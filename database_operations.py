@@ -32,7 +32,7 @@ def executeQuery(connection, query, data=None, fetchOne=False, lastInsert=False)
             cursor.execute(query)
 
         if lastInsert:
-            insert_id = cursor.lastrowid
+            insert_id = cursor.fetchone()
             return insert_id
         
         if query.strip().split()[0].upper() == 'SELECT':

@@ -86,7 +86,7 @@ CREATE TABLE group_members (
 
 
 CREATE TABLE bills(
-	bill_id SERIAL PRIMARY KEY,
+	bill_id SERIAL NOT NULL PRIMARY KEY,
 	amount INT NOT NULL,
 	member_id INT,
 	FOREIGN KEY (member_id) REFERENCES members(member_id)
@@ -100,7 +100,6 @@ CREATE TABLE payments(
 	date DATE,
 	processed TEXT,
 	FOREIGN KEY (bill_id) REFERENCES bills(bill_id)
-
 );
 
 

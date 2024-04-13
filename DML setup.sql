@@ -62,13 +62,6 @@ VALUES
     (3, 'Spin Class', 'Indoor cycling workout', '2024-06-04 10:00', '2024-06-04 12:00'),
     (4, 'Zumba', 'Dance-based fitness class', '2024-07-21 12:00', '2024-07-21 14:00');
 
--- Inserting sample data into the 'group_members' table
-INSERT INTO group_members (group_id, member_id) 
-VALUES 
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4);
 
 -- Inserting sample data into the 'bills' table
 INSERT INTO bills (amount, member_id) 
@@ -118,5 +111,8 @@ VALUES
 
 INSERT INTO available_times (start_time, end_time, booked, trainer_id)
 VALUES
-    ('2023-02-01 12:00:00', '2023-02-01 14:00', TRUE, 1),
-    ('2024-05-03 14:00:00', '2023-05-03 16:00', FALSE, 2)
+    ('2023-02-01 12:00:00', '2023-02-01 14:00:00', FALSE, 1),
+    ('2024-05-03 14:00:00', '2024-05-03 16:00:00', FALSE, 2),
+    ('2024-07-15 10:00:00', '2024-07-15 12:00:00', FALSE, 3),
+    ('2024-08-20 09:00:00', '2024-08-20 11:00:00', FALSE, 4);
+    

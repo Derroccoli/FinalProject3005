@@ -21,7 +21,7 @@ def main():
         if personType == "MEMBER":
             user = signIn(connect, "MEMBER")
             memberWorkFlow(connect, user)
-            
+
         elif personType == "TRAINER":
             user = signIn(connect, "TRAINER")
             trainerFunctions(connect, user)
