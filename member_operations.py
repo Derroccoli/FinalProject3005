@@ -70,7 +70,7 @@ def memberWorkFlow(connect, user):
         elif menuChoice == "3":
             while True:
                 schedulingMenu()
-                scheduleChoice = input("Please input (0-6)")
+                scheduleChoice = input("Please input (0-6): ")
 
                 if scheduleChoice not in ["1", "2", "3", "4", "5", "6", "0"]:
                     print("invalid option")
@@ -152,7 +152,7 @@ def updateFitnessGoals(connection, user):
         printTable(fitnessGoals, headers, False)
 
         print("Would you like to add, remove or complete a fitness goals?\nYou can also input B to backtrack")
-        userChoice = input("Please type in (add, remove or complete)").upper()
+        userChoice = input("Please type in (add, remove or complete): ").upper()
 
         if userChoice not in ["ADD", "REMOVE", "COMPLETE", "B"]:
             print("Invalid choice")
@@ -175,22 +175,24 @@ def updateFitnessGoals(connection, user):
 
         elif userChoice == "REMOVE":
             while True:
-                printTable(fitnessGoals, headers)
                 print("Please enter the fitness ID for the goal you would like to Delete")
                 idInput = input("ID: ")
                 for elements in fitnessGoals:
                     if idInput == str(elements[0]):
-                        print("proc")
                         deleteQuery = "DELETE FROM fitness_goals WHERE fitness_id = %s"
                         data = (elements[0],)
                         executeQuery(connection, deleteQuery, data)
+                        isComplete = True
                         break
-                    
-                print("invalid ID entered")
+                
+                if isComplete:
+                    break
+
+                else:
+                    print("invalid")
 
         elif userChoice == "COMPLETE":
             while True:
-                printTable(fitnessGoals, headers)
                 print("Please enter the fitness ID for the goal you would like to complete")
                 idInput = input("ID: ")
                 for elements in fitnessGoals:
@@ -288,7 +290,7 @@ def updateRoutine(connection, user):
         printTable(exercises, headers, False)
 
         print("Would you like to add or remove an exercise routine\nYou can also input B to backtrack")
-        userChoice = input("Please type in (add or remove)").upper()
+        userChoice = input("Please type in (add or remove): ").upper()
 
         if userChoice not in ["ADD", "REMOVE", "B"]:
             print("Invalid option")
@@ -447,8 +449,6 @@ def schedulePersonalSession(connection, user):
                 
             
         booked = bookTimeByTimeAnyone(connection, trainerId, start_time, numTimeSlots)
-        
-        print(trainerId, start_time, numTimeSlots)
 
         if booked == False:
             print("invalid number of hours")
@@ -469,10 +469,6 @@ def schedulePersonalSession(connection, user):
             end_time = start_time+ datetime.timedelta(hours=numTimeSlots)
             price = numTimeSlots * 30
 
-            billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
-            billData = (price, user[0])
-            bill_id = executeQuery(connection, billQuery, billData, True, True)
-
 
             print("Here is your bill: ")
             billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
@@ -482,7 +478,7 @@ def schedulePersonalSession(connection, user):
 
             
 
-            print("Bill created, it will be %i dollars", price)
+            print("Bill created, it will be", price," dollars")
             
             while True:
                 pay = input("Would you like to pay?(Y or N): ").upper()
@@ -496,7 +492,7 @@ def schedulePersonalSession(connection, user):
             if pay == "Y":
                 #create payment
                 paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
-                payData = (bill_id, price, datetime.datetime.today(), "Not Processed")
+                payData = (bills[0], price, datetime.datetime.today(), "Not Processed")
                 executeQuery(connection, paymentQuery, payData)
 
                 query = "INSERT INTO pt_session (member_id, trainer_id, session_type, start_time, end_time) VALUES (%s, %s, %s, %s, %s)"
@@ -646,9 +642,11 @@ def scheduleClass(connection, user):
                 break
 
         
-        billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
-        billData = (50, user[0])
-        bill_id = executeQuery(connection, billQuery, billData, False, True)
+        print("Here is your bill: ")
+        billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
+        billHeader = getHeaders(connection, "bills")
+        bills = executeQuery(connection, billQuery)
+        printTable(bills, billHeader)
 
         print("Bill created, it will be 50 dollars")
             
@@ -664,7 +662,7 @@ def scheduleClass(connection, user):
         if pay == "Y":
             #create payment
             paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
-            payData = (bill_id, 50, datetime.datetime.today(), "Not Processed")
+            payData = (bills[0], 50, datetime.datetime.today(), "Not Processed")
             executeQuery(connection, paymentQuery, payData)
 
             query = "INSERT INTO group_members (group_id, member_id) VALUES (%s, %s)"
@@ -712,6 +710,7 @@ def displayMenu():
     print("1. Health statistics?")
     print("2. Exercise routines?")
     print("3. Achievements")
+
     
 
 def schedulingMenu():

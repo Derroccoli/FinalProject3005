@@ -48,7 +48,7 @@ def signIn(connection, type):
 
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
-        print(profile)
+
         if profile:
             if type == "MEMBER":
                 headers = getHeaders(connection, "members")

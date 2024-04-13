@@ -188,8 +188,6 @@ def bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots):
     query = "SELECT * FROM available_times WHERE booked = FALSE AND trainer_id = %s AND start_time <= %s AND end_time >= %s"
     queryData = (trainer_id, start_time, end_time)
     availableTime = executeQuery(connection, query, queryData, fetchOne=True)
-    print(queryData)
-    print(availableTime)
 
     if(availableTime == None):
         print("There is no time slot there to set as booked")
