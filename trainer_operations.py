@@ -2,16 +2,17 @@ import datetime
 from database_operations import *
 
 def trainerFunctions(connection, user):
-    print("What would you like to do:")
 
     while True:
+        print()
         print("Trainer menu")
         print("0. Quit")
         print("1. View members")
         print("2. Manage your schedule availability")
+        print()
         
 
-        uInput = int(input())
+        uInput = int(input("Enter (0-2): "))
 
         if (uInput == 0):
             break
@@ -21,17 +22,18 @@ def trainerFunctions(connection, user):
             availablilityFunctions(connection, user)
 
 def viewMemberFunctions(connection):
-    print("What would you like to do:")
 
     while True:
+        print()
         print("View members menu")
         print("0. Return back to main trainer menu")
         print("1. View all members")
-        print("2. Find member by member id")
-        print("3. Find member(s) by first name")
+        print("2. Search member by member id")
+        print("3. Search member(s) by first name")
+        print()
         
 
-        uInput = int(input())
+        uInput = int(input("Enter (0-3): "))
 
         if (uInput == 0):
             break
@@ -81,15 +83,17 @@ def availablilityFunctions(connection, user):
     print("What would you like to do:")
 
     while True:
+        print()
         print("Schedule management functions")
         print("0. Return back to main trainer menu")
         print("1. View your schedule")
         print("2. Add an available time to your schedule")
         print("3. Set a timeslot as booked by availability id")
         print("4. Set a timeslot as booked by time")
+        print()
         
 
-        uInput = int(input())
+        uInput = int(input("Enter (0-4): "))
 
         if (uInput == 0):
             break
@@ -98,7 +102,7 @@ def availablilityFunctions(connection, user):
         elif(uInput == 2):
             addAvailableTime(connection, user)
         elif(uInput == 3):
-            bookTimebyAvailabilityId(connection)
+            bookTimebyAvailabilityId(connection, user)
         elif(uInput == 4):
             bookTimeByTime(connection, user)
 
@@ -138,8 +142,11 @@ def addAvailableTime(connection, user):
 
     executeQuery(connection, query, queryData)
 
+    viewYourSchedule(connection, user)
 
-def bookTimebyAvailabilityId(connection):
+
+def bookTimebyAvailabilityId(connection, user):
+    viewYourSchedule(connection, user)
     availability_id = int(input("What is the availability id of the time slot you would like to set as booked"))
 
     query = "UPDATE available_times SET booked = TRUE WHERE availability_id = %s"
@@ -149,8 +156,8 @@ def bookTimebyAvailabilityId(connection):
     executeQuery(connection, query, queryData)
 
 def bookTimeByTime(connection, user):
+    viewYourSchedule(connection, user)
     start_time = None
-    end_time = None
 
     while True:
         try:

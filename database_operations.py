@@ -99,4 +99,6 @@ def printTable(sql_query_result, headers, one=False):
                 headers = tuple(range(1, len(row) + 1))
             rows.append(row)
 
+    print()
     print(tabulate(rows, headers=headers, tablefmt="grid"))
+    print()

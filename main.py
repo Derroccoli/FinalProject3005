@@ -2,7 +2,6 @@ from database_operations import *
 from trainer_operations import *
 from admin_operations import *
 from member_operations import *
-from tabulate import tabulate
 import datetime
 
 def main():
