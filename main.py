@@ -1,7 +1,8 @@
 from database_operations import *
 from trainer_operations import *
 from admin_operations import *
-
+from member_operations import *
+from tabulate import tabulate
 import datetime
 
 def main():
@@ -18,7 +19,8 @@ def main():
         #member signing in
         if personType == "MEMBER":
             user = signIn(connect, "MEMBER")
-        elif personType == "TRAINER":
+            memberWorkFlow(connect, user)
+        elif personType == "MEMBER":
             user = signIn(connect, "TRAINER")
             trainerFunctions(connect, user)
         else:
@@ -75,6 +77,7 @@ def classify():
             return "MEMBER"
         elif (uInput == "ADMIN"):
             return "ADMIN"
+        print("invalid, please input again")
 
      
                 
@@ -125,10 +128,6 @@ def showAllMembers(connection):
         printTable(members, headers, False)
 
 
-def memberMenu():
-     print("What would you like to do?")
-     print("1. Update Personal information")
-     print("2. ")
 
 
 

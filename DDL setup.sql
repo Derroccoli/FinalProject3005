@@ -19,7 +19,7 @@ CREATE TABLE fitness_goals (
 	fitness_id SERIAL PRIMARY KEY,
 	member_id INT NOT NULL,
 	description TEXT,
-	completed BIT,
+	completed TEXT,
 	FOREIGN KEY (member_id) REFERENCES members(member_id)
 );
 
@@ -98,7 +98,7 @@ CREATE TABLE payments(
 	bill_id INT,
 	amount INT,
 	date DATE,
-	processed BIT,
+	processed TEXT,
 	FOREIGN KEY (bill_id) REFERENCES bills(bill_id)
 
 );
