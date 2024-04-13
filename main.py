@@ -20,7 +20,7 @@ def main():
         if personType == "MEMBER":
             user = signIn(connect, "MEMBER")
             memberWorkFlow(connect, user)
-        elif personType == "MEMBER":
+        elif personType == "TRAINER":
             user = signIn(connect, "TRAINER")
             trainerFunctions(connect, user)
         else:
@@ -48,8 +48,15 @@ def signIn(connection, type):
 
         data = (userEmail,)
         profile = executeQuery(connection, query, data, fetchOne=True)
+        print(profile)
         if profile:
-            headers = getHeaders(connection, "members")
+            if type == "MEMBER":
+                headers = getHeaders(connection, "members")
+            elif type == "TRAINER":
+                headers = getHeaders(connection, "trainers")
+            else:
+                headers = getHeaders(connection, "admin_staff")
+            
             print("Profile found: ")
             printTable(profile, headers, True)
             return profile

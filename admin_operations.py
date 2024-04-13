@@ -187,24 +187,27 @@ def groupClassFunctions(connection):
     while True:
         print("Room Booking Menu")
         print("0. Go back to the main admin menu")
-        print("1. View equipment status")
-        print("2. Mark an equipment as maintained")
-        print("3. Mark all equipment as maintained")
-        print("4. Add new equipment")
-        print("5. Remove old equipment")
+        print("1. View group classes")
+        print("2. View members of a particular class")
+        print("3. Create a group class")
+        print("4. Remove a group class")
+        print("5. Delete old group classes")
         
 
         uInput = int(input())
-
+'''
         if (uInput == 0):
             break
         elif (uInput == 1):
-            viewEquipment(connection)
+            createClass(connection)
         elif (uInput == 2):
-            markMaintained(connection)
+            removeClass(connection)
         elif (uInput == 3):
-            markAllMaintained(connection)
+            createClass(connection)
         elif (uInput == 4):
-            addNewEquipment(connection)
+            removeClass(connection)
         elif (uInput == 5):
-            removeOldEquipment(connection)
+            deleteAllClasses(connection)
+
+def createClass(connection):
+'''
