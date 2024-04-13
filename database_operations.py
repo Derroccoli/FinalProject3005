@@ -51,7 +51,7 @@ def executeQuery(connection, query, data=None, fetchOne=False):
 
 
 
-def getHeaders(connection, tableName):
+def getHeaders(connection, tableName, data=None):
     try:
         # Create a cursor
         cursor = connection.cursor()
@@ -59,8 +59,14 @@ def getHeaders(connection, tableName):
         # Execute query to get column names
         cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}'")
 
+        if data:
+            headers = []
+            for row in cursor.fetchall():
+                if row[0] in data:
+                    headers.append(row[0])
         # Fetch all column names
-        headers = [row[0] for row in cursor.fetchall()]
+        else:
+            headers = [row[0] for row in cursor.fetchall()]
 
         # Close the cursor
         cursor.close()

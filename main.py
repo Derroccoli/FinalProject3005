@@ -1,4 +1,5 @@
 from database_operations import *
+from trainer_operations import *
 from admin_operations import *
 from member_operations import *
 from tabulate import tabulate
@@ -23,8 +24,10 @@ def main():
             memberWorkFlow(connect, user)
         elif personType == "TRAINER":
             user = signIn(connect, "TRAINER")
+            trainerFunctions(connect, user)
         else:
             user = signIn(connect, "ADMIN")
+            adminFunctions(connect, user)
 
         
              

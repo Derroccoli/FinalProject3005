@@ -4,7 +4,7 @@ from main import *
 def memberWorkFlow(connect, user):
     while True:
         memberMenu()
-        choices = ["1", "2", "3"]
+        choices = ["1", "2", "3", "Q"]
         menuChoice = input("Please type in (1, 2, or 3): ")
         print()
         
@@ -58,10 +58,32 @@ def memberWorkFlow(connect, user):
                     displayExercise(connect, user)
                     print("What else would like to see? \n")
 
-                else:
+                elif displayChoice == "3":
                     print("Here are your Achievements!")
                     displayAchievements(connect, user)
                     print("What else would like to see? \n")
+                
+                else:
+                    break
+
+        elif menuChoice == "3":
+            while True:
+                schedulingMenu()
+                scheduleChoice = input("Please input 1 or 2 (you can also do B to backtrack)")
+
+                if scheduleChoice not in ["1", "2", "B"]:
+                    print("invalid option")
+                    continue
+
+                if scheduleChoice == "1":
+                    schedulePersonalSession(connect, user)
+                
+                elif scheduleChoice == "2":
+                    scheduleClass(connect, user)
+                
+                else:
+                    break
+
 
         else:
             break
@@ -337,27 +359,37 @@ def updateRoutine(connection, user):
             break
 
 def displayHealth(connection, user):
-    query = "SELECT * FROM health_metrics WHERE member_id = %s"
+    query = "SELECT recorded_date, metric_type, value FROM health_metrics WHERE member_id = %s"
     data = (user[0],)
+    headerData = ("recorded_date", "metric_type", "value")
     healthMetrics = executeQuery(connection, query, data)
-    headers = getHeaders(connection, "health_metrics")
+    headers = getHeaders(connection, "health_metrics", headerData)
     printTable(healthMetrics, headers)
 
 
 def displayExercise(connection, user):
-    query = "SELECT * FROM exercises WHERE member_id = %s"
+    query = "SELECT date_of_routine, exercise, sets, reps, duration FROM exercises WHERE member_id = %s"
     data = (user[0],)
+    headerData = ("date_of_routine", "exercise", "sets", "reps", "duration")
     exercises = executeQuery(connection, query, data)
-    headers = getHeaders(connection, "exercises")
+    headers = getHeaders(connection, "exercises", headerData)
     printTable(exercises, headers)
 
 
 def displayAchievements(connection, user):
-    query = "SELECT * FROM achievements WHERE member_id = %s"
+    query = "SELECT date_of_accomplishment, feat FROM achievements WHERE member_id = %s"
     data = (user[0],)
+    headerData = ("date_of_accomplishment", "feat")
     achievements = executeQuery(connection, query, data)
-    headers = getHeaders(connection, "achievements")
+    headers = getHeaders(connection, "achievements", headerData)
     printTable(achievements, headers)
+
+
+def schedulePersonalSession(connection, user):
+    print()
+
+def scheduleClass(connection, user):
+    print()
 
 def memberMenu():
      print("What would you like to do?")
@@ -380,4 +412,10 @@ def displayMenu():
     print("2. Exercise routines?")
     print("3. Achievements")
     print("B. BackTrack\n")
+
+def schedulingMenu():
+    print("Welcome to the scheduling zone")
+    print("What would you like to do?")
+    print("1. Schedule a personal training session")
+    print("2. Schedule for group classes")
 
