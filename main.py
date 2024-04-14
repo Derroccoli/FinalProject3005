@@ -119,15 +119,20 @@ def register(connection):
 
     query = "INSERT INTO members (firstName, lastName, email, phone_number, date_registered) VALUES (%s, %s, %s, %s, %s)"
     queryData = (firstName, lastName, email, phoneNumber, regDate)
-    member_id = executeQuery(connection, query, queryData, False, True)
-    showAllMembers(connection)
+    executeQuery(connection, query, queryData)
+
+    memberQuery = "SELECT * FROM members WHERE member_id = (SELECT MAX(member_id) FROM members)"
+    member = executeQuery(connection, memberQuery)
 
     billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
-    billData = (100, member_id)
-    paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
-    bill_id = executeQuery(connection, billQuery, billData, False, True)
+    billData = (100, member[0][0])
+    executeQuery(connection, billQuery, billData)
 
-    payData = (bill_id, 100, datetime.datetime.today(), "Not Processed")
+    billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
+    bills = executeQuery(connection, billQuery)
+
+    paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
+    payData = (bills[0][0], 50, datetime.datetime.today(), "Not Processed")
     executeQuery(connection, paymentQuery, payData)
 
     print("100 dollars extracted from bank account\nWelcome to this establishment!")

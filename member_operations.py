@@ -15,7 +15,7 @@ def memberWorkFlow(connect, user):
 
         if menuChoice == "1":
             while True:
-                headers = getHeaders(connect, "members")
+                
                 profileMenu()
                 profileValues = ["1","2","3","4","0"]
                 profileChoice = input("Please type in (0 - 4): ").upper()
@@ -25,7 +25,6 @@ def memberWorkFlow(connect, user):
                     continue
                 
                 if profileChoice == "1":
-                    printTable(user, headers, True)
                     updateProfile(connect, user)
                 
                 elif profileChoice == "2":
@@ -99,6 +98,12 @@ def memberWorkFlow(connect, user):
 def updateProfile(connection, user):
      print("Above is your profile, what would you like to change?")
      while True:
+        query = "SELECT * FROM members WHERE member_id = %s"
+        data = (user[0],)
+        member = executeQuery(connection, query, data)
+        headers = getHeaders(connection, "members")
+        printTable(member, headers, False)
+
         print("0. backout")
         print("1. Email")
         print("2. Phone Number")
@@ -169,7 +174,7 @@ def updateFitnessGoals(connection, user):
                 break
 
             query = "INSERT INTO fitness_goals (member_id, description, completed) VALUES (%s, %s, %s)"
-            data = (user[0], goal, "Incomplete")
+            data = (user[0], goal, "incomplete")
             executeQuery(connection, query, data)
             print("goal successfully added")
 
@@ -470,14 +475,17 @@ def schedulePersonalSession(connection, user):
             price = numTimeSlots * 30
 
 
+            billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
+            billData = (price, user[0])
+            paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
+            executeQuery(connection, billQuery, billData)
+
             print("Here is your bill: ")
             billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
             billHeader = getHeaders(connection, "bills")
             bills = executeQuery(connection, billQuery)
             printTable(bills, billHeader)
 
-    
-            
 
             print("Bill created, it will be", price," dollars")
             
@@ -493,7 +501,7 @@ def schedulePersonalSession(connection, user):
             if pay == "Y":
                 #create payment
                 paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
-                payData = (bills[0], price, datetime.datetime.today(), "Not Processed")
+                payData = (bills[0][0], price, datetime.datetime.today(), "incomplete")
                 executeQuery(connection, paymentQuery, payData)
 
                 query = "INSERT INTO pt_session (member_id, trainer_id, session_type, start_time, end_time) VALUES (%s, %s, %s, %s, %s)"
@@ -511,8 +519,6 @@ def schedulePersonalSession(connection, user):
                 printTable(session, headers, one=True)
 
                 break
-
-                
 
 
             else:
@@ -602,12 +608,6 @@ def cancelPersonalSession(connection, user):
 
     executeQuery(connection, query, queryData)
 
-    query = "SELECT start_time, end_time FROM pt_session WHERE session_id = %s"
-    queryData = (session_id,)
-    result = executeQuery(connection, query, queryData)
-    query = "UPDATE available_times SET booked = FALSE WHERE start_time = %s AND end_time = %s"
-    queryData = (result[0][0], result[0][1])
-    executeQuery(connection, query, queryData)
 
     viewYourPersonalSessions(connection, user)
 
@@ -642,7 +642,11 @@ def scheduleClass(connection, user):
             if isValidGroup:
                 break
 
-        
+        billQuery = "INSERT INTO bills (amount, member_id) VALUES (%s, %s)"
+        billData = (50, user[0])
+        paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
+        executeQuery(connection, billQuery, billData)
+
         print("Here is your bill: ")
         billQuery = "SELECT * FROM bills WHERE bill_id = (SELECT MAX(bill_id) FROM bills)"
         billHeader = getHeaders(connection, "bills")
@@ -663,7 +667,7 @@ def scheduleClass(connection, user):
         if pay == "Y":
             #create payment
             paymentQuery = "INSERT INTO payments (bill_id, amount, date, processed) VALUES (%s, %s, %s, %s)"
-            payData = (bills[0], 50, datetime.datetime.today(), "Not Processed")
+            payData = (bills[0][0], 50, datetime.datetime.today(), "Not Processed")
             executeQuery(connection, paymentQuery, payData)
 
             query = "INSERT INTO group_members (group_id, member_id) VALUES (%s, %s)"

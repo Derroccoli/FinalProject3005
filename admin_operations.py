@@ -212,7 +212,7 @@ def removeOldEquipment(connection):
 
     equipment_id = int(input("Enter the id of the equipment that you are getting rid of: "))
 
-    query = f"DELETE FROM room_bookings WHERE equipment_id = %s"
+    query = f"DELETE FROM equipments WHERE equipment_id = %s"
     queryData = (equipment_id,)
 
     result = executeQuery(connection, query, queryData)
@@ -460,7 +460,7 @@ def viewAllBillsWithPayments(connection):
     
 
 def processPaymentByPayId(connection):
-    viewAllBillsWithPayments(connection, 1)
+    viewBillsAndPaymentsHelper(connection, 1)
 
     pay_id = int(input("What is the pay_id of the payment you'd like to process: "))
 
@@ -468,10 +468,10 @@ def processPaymentByPayId(connection):
     queryData = (pay_id,)
     executeQuery(connection, query, queryData)
 
-    viewAllBillsWithPayments(connection, 1)
+    viewBillsAndPaymentsHelper(connection, 1)
 
 def processAllUnprocessedPayments(connection):
     query = "UPDATE payments SET processed = 'processed' WHERE processed != 'processed'"
     executeQuery(connection, query)
 
-    viewAllBillsWithPayments(connection, 2)
+    viewBillsAndPaymentsHelper(connection, 2)
