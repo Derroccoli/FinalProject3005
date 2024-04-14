@@ -83,11 +83,26 @@ def findByFirstName(connection):
 
     data = (firstName,)
     profile = executeQuery(connection, query, data)
-    print(profile)
+
     if profile:
+
         headers = getHeaders(connection, "members")
         print("Profile found: ")
         printTable(profile, headers)
+
+        query = "SELECT * FROM fitness_goals WHERE member_id = %s"
+        newData = (profile[0][0],)
+        result = executeQuery(connection, query, newData)
+        headers = getHeaders(connection, "fitness_goals")
+        print("Fitness goals")
+        printTable(result, headers)
+
+        query = "SELECT * FROM health_metrics WHERE member_id = %s"
+        result = executeQuery(connection, query, newData)
+        headers = getHeaders(connection, "health_metrics")
+        print("Health metrics")
+        printTable(result, headers)
+
     else:
         print("No profile found for the provided first name")
 
@@ -201,8 +216,6 @@ def bookTimeByTimeAnyone(connection, trainer_id, start_time, numTimeSlots):
     query = "SELECT * FROM available_times WHERE booked = FALSE AND trainer_id = %s AND start_time <= %s AND end_time >= %s"
     queryData = (trainer_id, start_time, end_time)
     availableTime = executeQuery(connection, query, queryData, fetchOne=True)
-    print(queryData)
-    print(availableTime)
 
     if(availableTime == None):
         print("There is no time slot there to set as booked")

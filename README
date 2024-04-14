@@ -1,0 +1,13 @@
+Welcome to Kai and Derrick's fitness project!
+
+
+
+Overall Assumptions
+Trainers manage their schedule and set when they’re available, admins use this info to book classes, members use this schedule to book
+Assume that logging in is done without password
+Assume that payment is done without credit card
+Assume that trainers and admins cannot register as this was not specified in the specifications
+Assume there are no refunds
+Assume there is no need for members to deregister from group classes as it was not specified in the specs
+Assume a member profile when searched by a trainer is their info, fitness goals, and health metrics
+Assume that once a fitness goal is complete it becomes a fitness achievement
