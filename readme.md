@@ -2,7 +2,7 @@ Contributors:
 - Kai Sundararaj 101240325
 - Derrick Zhang 101232374
 
-Youtube video: https://youtu.be/KDfnUDlImFc
+Youtube video: https://youtu.be/c6EnQnxQVf8
 
 Instructions to run:
 - Open project in terminal
