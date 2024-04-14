@@ -4,6 +4,10 @@ Contributors:
 
 Youtube video: https://youtu.be/c6EnQnxQVf8
 
+Instructions to run:
+- Open project in terminal
+- enter "python3 main.py"
+
 Overall Assumptions
 - Trainers manage their schedule and set when they’re available, admins use this info to book classes, members use this schedule to book
 - Assume that logging in is done without password
