@@ -1,8 +1,8 @@
 Contributors:
-- Kai Sundararaj
-- Derrick Zhang
+- Kai Sundararaj 101240325
+- Derrick Zhang 101232374
 
-Youtube video: 
+Youtube video: https://youtu.be/KDfnUDlImFc
 
 Overall Assumptions
 - Trainers manage their schedule and set when they’re available, admins use this info to book classes, members use this schedule to book
@@ -14,7 +14,10 @@ Overall Assumptions
 - Assume a member profile when searched by a trainer is their info, fitness goals, and health metrics
 - Assume that once a fitness goal is complete it becomes a fitness achievements
 
+CHANGED: DDL AND DML are found in the SQL sub folder
 
+
+FOR LINKS, CONTROL CLICK ON THE LINK
 
 2.1
 ER Diagram: Click [here](ER_Model.drawio.png) to view the ER Diagram.
